@@ -28,4 +28,20 @@ public class CateogryServiceImpl  implements CategoryService {
     public Boolean existCategory(String name) {
         return categoryRepository.existsByName(name);
     }
+
+    @Override
+    public Boolean deleteCategory(int id) {
+
+        if(categoryRepository.existsById(id)) {
+            categoryRepository.deleteById(id);
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    @Override
+    public Category getCategory(int id) {
+        return categoryRepository.findById(id).orElse(null);
+    }
 }

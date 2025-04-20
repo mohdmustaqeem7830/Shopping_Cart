@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,7 +39,8 @@ public class AdminController {
 
 
     @GetMapping("/category")
-    public String category(){
+    public String category(Model m){
+        m.addAttribute("categorys",categoryService.getAllCategory());
         return "admin/category";
     }
 
@@ -64,5 +66,48 @@ public class AdminController {
             }
         }
         return "redirect:/admin/category";
+    }
+
+    @GetMapping("/deleteCategory/{id}")
+    public String deleteCategory(@PathVariable int id, HttpSession session){
+        Boolean deleteCategory = categoryService.deleteCategory(id);
+        if (deleteCategory){
+          session.setAttribute("succMsg","Category Deleted Successfully");
+        }else{
+            session.setAttribute("errorMsg","Not Deleted ! Internal Server error");
+        }
+        return "redirect:/admin/category";
+    }
+
+    @GetMapping("/loadEditCategory/{id}")
+    public String loadEditCategory(@PathVariable int id,Model m){
+        m.addAttribute("editCategory",categoryService.getCategory(id));
+        return "admin/edit_category";
+    }
+
+    @PostMapping("/updateCategory")
+    public String updateCategory(@ModelAttribute Category category, @RequestParam("file")MultipartFile file, HttpSession session) throws IOException {
+        Category oldCategory = categoryService.getCategory(category.getId());
+
+        String imageName= file.isEmpty() ? oldCategory.getImageName() : file.getOriginalFilename();
+        oldCategory.setName(category.getName());
+        oldCategory.setIsActive(category.getIsActive());
+        oldCategory.setImageName(imageName);
+
+        Category updateCategory = categoryService.saveCategory(oldCategory);
+
+        if (!ObjectUtils.isEmpty(updateCategory)){
+            if (!file.isEmpty()){
+                File saveFile = new ClassPathResource("static/img").getFile();
+                Path path = Paths.get(saveFile.getAbsolutePath()+File.separator+"category_img"+File.separator+file.getOriginalFilename());
+
+                System.out.println(path);
+                Files.copy(file.getInputStream(),path, StandardCopyOption.REPLACE_EXISTING);
+            }
+            session.setAttribute("succMsg","Category Updated Successfully");
+        }else{
+            session.setAttribute("errorMsg","Not Saved ! Internal Server error");
+        }
+        return "redirect:/admin/loadEditCategory/"+category.getId();
     }
 }

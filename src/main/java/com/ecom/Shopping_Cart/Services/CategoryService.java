@@ -12,4 +12,7 @@ public interface CategoryService {
 
     public Boolean existCategory(String name);
 
+    public Boolean deleteCategory(int id);
+
+    public Category getCategory(int id);
 }
