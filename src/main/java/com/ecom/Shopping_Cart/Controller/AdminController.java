@@ -141,4 +141,62 @@ public class AdminController {
 
         return "redirect:/admin/loadAddProduct";
     }
+
+    @GetMapping("products")
+    public  String loadViewProduct(Model m){
+      List<Product> products = productServices.getAllProducts();
+      m.addAttribute("products",products);
+    return "admin/product";}
+
+    @GetMapping("/deleteProduct/{id}")
+    public String deleteProduct(@PathVariable int id, HttpSession session){
+        Boolean deleteCategory = productServices.deleteProduct(id);
+        if (deleteCategory){
+            session.setAttribute("succMsg","Product Deleted Successfully");
+        }else{
+            session.setAttribute("errorMsg","Not Deleted ! Internal Server error");
+        }
+        return "redirect:/admin/products";
+    }
+
+
+    @GetMapping("/loadEditProduct/{id}")
+    public String loadEditProduct(@PathVariable int id,Model m) throws IOException {
+
+        Product product = productServices.getProduct(id);
+
+        m.addAttribute("editProduct",product);
+        m.addAttribute("categories",categoryService.getAllCategory());
+
+      return "admin/edit_product";
+    };
+
+    @PostMapping("/updateProduct")
+    public String updateProduct(@ModelAttribute Product product, @RequestParam("file")MultipartFile file, HttpSession session) throws IOException {
+
+        Product oldProduct = productServices.getProduct(product.getId());
+        String image = file.isEmpty()? oldProduct.getImage() : file.getOriginalFilename();
+        oldProduct.setImage(image);
+        oldProduct.setTitle(product.getTitle());
+        oldProduct.setDescription(product.getDescription());
+        oldProduct.setPrice(product.getPrice());
+        oldProduct.setCategory(product.getCategory());
+        oldProduct.setPrice(product.getPrice());
+        oldProduct.setStock(product.getStock());
+
+        Product updateProduct = productServices.saveProduct(oldProduct);
+        if (!ObjectUtils.isEmpty(updateProduct)){
+            session.setAttribute("succMsg","Product Updated Successfully");
+            if (!file.isEmpty()){
+                File saveFile = new ClassPathResource("static/img").getFile();
+                Path path = Paths.get(saveFile.getAbsolutePath()+File.separator+"product_img"+File.separator+file.getOriginalFilename());
+
+                System.out.println(path);
+                Files.copy(file.getInputStream(),path, StandardCopyOption.REPLACE_EXISTING);
+            }
+        }else{
+            session.setAttribute("errorMsg","Not Saved ! Internal Server error");
+        }
+    return "redirect:/admin/loadEditProduct/"+product.getId();
+    }
 }

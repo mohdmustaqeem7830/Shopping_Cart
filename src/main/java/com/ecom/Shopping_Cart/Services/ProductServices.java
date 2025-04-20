@@ -2,7 +2,13 @@ package com.ecom.Shopping_Cart.Services;
 
 import com.ecom.Shopping_Cart.Model.Product;
 
+import java.util.List;
+
 public interface ProductServices {
 
-    public Product saveProduct(Product product);
+    Product saveProduct(Product product);
+    List<Product> getAllProducts();
+    Boolean deleteProduct(int id);
+
+    Product getProduct(int id);
 }

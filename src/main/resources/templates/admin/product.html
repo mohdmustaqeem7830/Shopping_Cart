@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html  lang="en"  xmlns:th = "html://www.thymeLeaf.org"  th:replace="base::Layout(~{::section})">
+
+<head>
+    <meta>
+    <title>
+        INSERT IITLE HERE
+    </title>
+</head>
+
+<body>
+<section>
+
+    <div class="container mt-5">
+    <div class="card card-sh">
+
+        <div class="card-header text-center">
+              <p class="fs-4">View Products</p>
+        </div>
+
+        <div class="card-body  text-center">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Sl No.</th>
+                    <th scope="col">Image.</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Stock</th>
+                    <th scope="col">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="p,c:${products}">
+                    <th scope="row">[[${c.count}]]</th>
+                    <td><img th:src="@{/img/product_img/}+${p.image}" height="50px" width="50px">[[${p.image}]]</td>
+                    <td>[[${p.title}]]</td>
+                    <td>[[${p.description}]]</td>
+                    <td>[[${p.price}]]</td>
+                    <td>[[${p.stock}]]</td>
+                    <td>
+                        <a th:href="@{'loadEditProduct/'+${p.id}}"   class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-pen-to-square fa-1x"> Edit</i>
+                        </a>
+
+                        <a th:href="@{'deleteProduct/'+${p.id}}" class="btn btn-danger btn-sm">
+                            <i class="fa-solid fa-trash-can fa-1x"> Delete</i>
+                        </a>
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    </div>
+</section>
+</body>
