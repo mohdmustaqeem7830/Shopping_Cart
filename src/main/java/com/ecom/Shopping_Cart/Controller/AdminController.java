@@ -120,10 +120,14 @@ public class AdminController {
     }
 
 
+//    code for the product start from here
+
     @PostMapping("/saveProduct")
     public String saveProduct(@ModelAttribute Product product, @RequestParam("file")MultipartFile file, HttpSession session) throws IOException {
 
         String imageName = file.isEmpty()? "default.jpg" : file.getOriginalFilename();
+        product.setDiscount(0);
+        product.setDiscountPrice(product.getPrice());
         product.setImage(imageName);
 
         Product saveProduct = productServices.saveProduct(product);
@@ -183,20 +187,32 @@ public class AdminController {
         oldProduct.setCategory(product.getCategory());
         oldProduct.setPrice(product.getPrice());
         oldProduct.setStock(product.getStock());
+        oldProduct.setDiscount(product.getDiscount());
+        oldProduct.setIsActive(product.getIsActive());
 
-        Product updateProduct = productServices.saveProduct(oldProduct);
-        if (!ObjectUtils.isEmpty(updateProduct)){
-            session.setAttribute("succMsg","Product Updated Successfully");
-            if (!file.isEmpty()){
-                File saveFile = new ClassPathResource("static/img").getFile();
-                Path path = Paths.get(saveFile.getAbsolutePath()+File.separator+"product_img"+File.separator+file.getOriginalFilename());
+        Double discount = product.getPrice()*(product.getDiscount()/100.0);
+        Double discountPrice = product.getPrice()-discount;
+        oldProduct.setDiscountPrice(discountPrice);
 
-                System.out.println(path);
-                Files.copy(file.getInputStream(),path, StandardCopyOption.REPLACE_EXISTING);
-            }
+        if (product.getDiscount()<0 || product.getDiscount()>100){
+            session.setAttribute("errorMsg","Invalid Discount");
         }else{
-            session.setAttribute("errorMsg","Not Saved ! Internal Server error");
+            Product updateProduct = productServices.saveProduct(oldProduct);
+            if (!ObjectUtils.isEmpty(updateProduct)){
+                session.setAttribute("succMsg","Product Updated Successfully");
+                if (!file.isEmpty()){
+                    File saveFile = new ClassPathResource("static/img").getFile();
+                    Path path = Paths.get(saveFile.getAbsolutePath()+File.separator+"product_img"+File.separator+file.getOriginalFilename());
+
+                    System.out.println(path);
+                    Files.copy(file.getInputStream(),path, StandardCopyOption.REPLACE_EXISTING);
+                }
+            }else{
+                session.setAttribute("errorMsg","Not Saved ! Internal Server error");
+            }
         }
+
+
     return "redirect:/admin/loadEditProduct/"+product.getId();
     }
 }

@@ -27,6 +27,9 @@
                     <th scope="col">Title</th>
                     <th scope="col">Category</th>
                     <th scope="col">Price</th>
+                    <th scope="col">Discount</th>
+                    <th scope="col">Discount Price</th>
+                    <th scope="col">Status</th>
                     <th scope="col">Stock</th>
                     <th scope="col">Action</th>
                 </tr>
@@ -36,8 +39,11 @@
                     <th scope="row">[[${c.count}]]</th>
                     <td><img th:src="@{/img/product_img/}+${p.image}" height="50px" width="50px">[[${p.image}]]</td>
                     <td>[[${p.title}]]</td>
-                    <td>[[${p.description}]]</td>
+                    <td>[[${p.category}]]</td>
                     <td>[[${p.price}]]</td>
+                    <td>[[${p.discount}]]</td>
+                    <td>[[${p.discountPrice}]]</td>
+                    <td>[[${p.isActive}]]</td>
                     <td>[[${p.stock}]]</td>
                     <td>
                         <a th:href="@{'loadEditProduct/'+${p.id}}"   class="btn btn-primary btn-sm">

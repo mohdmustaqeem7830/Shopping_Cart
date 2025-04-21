@@ -38,4 +38,9 @@ public class ProductServiceImpl implements ProductServices {
     public Product getProduct(int id) {
       return  productRepository.findById(id).orElse(null);
     }
+
+    @Override
+    public List<Product> getAllActiveProducts() {
+        return productRepository.findByIsActiveTrue();
+    }
 }

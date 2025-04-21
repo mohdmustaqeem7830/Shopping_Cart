@@ -29,4 +29,10 @@ public class Product {
 
     private String image;
 
+    private double discount;
+    private double discountPrice;
+
+
+    private Boolean isActive;
+
 }
