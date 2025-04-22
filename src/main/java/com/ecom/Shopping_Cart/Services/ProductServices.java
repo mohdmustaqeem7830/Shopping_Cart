@@ -12,6 +12,6 @@ public interface ProductServices {
 
     Product getProduct(int id);
 
-    List<Product> getAllActiveProducts();
+    List<Product> getAllActiveProducts(String category);
 
 }

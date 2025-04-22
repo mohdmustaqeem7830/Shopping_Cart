@@ -29,76 +29,43 @@
        <div class="container-fluid mt-1">
             <div class="row">
                 <div class="col-md-2">
-
                     <div class="list-group">
-                        <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
-                            Categories
+                        <p class="fs-4 text-center">Categories</p>
+                        <a href="/products" class="list-group-item list-group-item-action active" aria-current="true" th:classappend="${paramValue==''} ? 'active' : '' ">
+                            All
                         </a>
-                        <a href="#" class="list-group-item list-group-item-action">Electronics</a>
-                        <a href="#" class="list-group-item list-group-item-action">Mobile Phone</a>
-                        <a href="#" class="list-group-item list-group-item-action">Clothes</a>
+                        <a   th:each="c:${categories}" th:href="@{'/products?category='+${c.name}}" th:classappend="${paramValue==c.name} ? 'active' : '' " class="list-group-item list-group-item-action">[[${c.name}]]</a>
+
                     </div>
                 </div>
-                <div class="col-md-10">
+                <div class="col-md-10 ">
                     <div class="card">
                         <div class="card-body">
                             <p class="fs-3 text-center">Products</p>
                             <div class="row">
-                            <div class="col-md-3">
-                                <div class="card">
-                                    <div class="card-body text-center">
-                                        <img src="img/product_img/laptop.jpg"  width="100%" height="150px">
-                                        <p class="fs-5 text-center">Laptop</p>
-                                        <div class="row text-center">
-                                            <p class="fs-6 fw-bold">&#8377 500  <span class="fs-6 text-success">20% off</span></p>
-                                            <a href="/view_product" class="btn btn-primary col-md-6 offset-md-3">View Details</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-<!--                                remove karna h backened likhne ke baad-->
-                                <div class="col-md-3">
+                                <th:block th:if="${products.size>0}">
+                                </th:block>
+                                <div class="col-md-3"  th:each="p:${products}">
                                     <div class="card">
                                         <div class="card-body text-center">
-                                            <img src="img/product_img/laptop.jpg"  width="100%" height="150px">
-                                            <p class="fs-5 text-center">Laptop</p>
+                                            <img th:src="@{'img/product_img/'+${p.image}}" width="100%" height="150px">
+                                            <p class="fs-5 text-center">[[${p.title}]]</p>
                                             <div class="row text-center">
-                                                <p class="fs-6 fw-bold">&#8377 500  <span class="fs-6 text-success">20% off</span></p>
-                                                <a class="btn btn-primary col-md-6 offset-md-3">View Details</a>
+                                                <p class="fs-6 fw-bold">
+                                                    <span>&#8377 [[${p.discountPrice}]]</span> <br>
+                                                    <span class="text-decoration-line-through text-secondary">&#8377 [[${p.price}]]</span>
+                                                    <span class="fs-6 text-success">[[${p.discount}]] %off</span>
+
+                                                </p>
+                                                <a th:href="@{'/view_product/'+${p.id}}" class="btn btn-primary col-md-6 offset-md-3">View Details</a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                <th:block th:unless="${products.size>0}">
+                                    <P class="fs-4 text-danger text-center">Product not available</P>
+                                </th:block>
 
-
-                                <div class="col-md-3">
-                                    <div class="card">
-                                        <div class="card-body text-center">
-                                            <img src="img/product_img/laptop.jpg"  width="100%" height="150px">
-                                            <p class="fs-5 text-center">Laptop</p>
-                                            <div class="row text-center">
-                                                <p class="fs-6 fw-bold">&#8377 500  <span class="fs-6 text-success">20% off</span></p>
-                                                <a class="btn btn-primary col-md-6 offset-md-3">View Details</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <div class="col-md-3">
-                                    <div class="card">
-                                        <div class="card-body text-center">
-                                            <img src="img/product_img/laptop.jpg"  width="100%" height="150px">
-                                            <p class="fs-5 text-center">Laptop</p>
-                                            <div class="row text-center">
-                                                <p class="fs-6 fw-bold">&#8377 500  <span class="fs-6 text-success">20% off</span></p>
-                                                <a class="btn btn-primary col-md-6 offset-md-3">View Details</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!--                            yahan tak remove-->
 
                             </div>
                         </div>
