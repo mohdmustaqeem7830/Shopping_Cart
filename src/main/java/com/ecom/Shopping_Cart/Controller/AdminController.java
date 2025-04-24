@@ -3,8 +3,10 @@ package com.ecom.Shopping_Cart.Controller;
 
 import com.ecom.Shopping_Cart.Model.Category;
 import com.ecom.Shopping_Cart.Model.Product;
+import com.ecom.Shopping_Cart.Model.UserDtls;
 import com.ecom.Shopping_Cart.Services.CategoryService;
 import com.ecom.Shopping_Cart.Services.ProductServices;
+import com.ecom.Shopping_Cart.Services.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -21,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -29,6 +32,25 @@ public class AdminController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private UserService userService;
+
+
+    @ModelAttribute
+    public  void getUserDetail(Principal p, Model m){
+
+        if (p!=null){
+            String email = p.getName();
+            UserDtls user = userService.getUserByEmail(email);
+            m.addAttribute("user", user);
+        }
+
+
+        List<Category> allActiveCategory = categoryService.getAllActiveCategory();
+        m.addAttribute("categories", allActiveCategory);
+    }
+
 
     @Autowired
     private ProductServices productServices;
@@ -214,5 +236,27 @@ public class AdminController {
 
 
     return "redirect:/admin/loadEditProduct/"+product.getId();
+    }
+
+
+    //User Code here
+
+    @GetMapping("/users")
+    public String getAllUsers(Model m){
+        List<UserDtls> allUser = userService.getAllUser("ROLE_USER");
+        m.addAttribute("users",allUser);
+        return "admin/users";
+
+    }
+@GetMapping("/updateStatus/{id}")
+    public String updateUserAccountStatus(@PathVariable int id,HttpSession session){
+        Boolean f  = userService.updateAccountStatus(id);
+        System.out.println(String.valueOf(id));
+        if (f){
+            session.setAttribute("succMsg","Account Status Updated Successfully");
+        }else{
+            session.setAttribute("errorMsg","Not Updated ! Internal Server error");
+        }
+        return "redirect:/admin/users";
     }
 }
