@@ -11,8 +11,10 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -38,13 +40,10 @@ public class HomeController {
     private ProductServices productServices;
     @Autowired
     private UserService userService;
-
     @Autowired
     private  CommonUtils commonUtils;
-
-
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @ModelAttribute
     public  void getUserDetail(Principal p, Model m){
@@ -136,7 +135,6 @@ public class HomeController {
             userService.updateUserResetToken(email, resetToken);
 
             String url = CommonUtils.generateUrl(request)+"/resetPassword?token="+resetToken;
-            System.out.println(url);
             Boolean sendmail = commonUtils.sendMail(email,url);
 
 
@@ -168,9 +166,11 @@ public class HomeController {
             m.addAttribute("msg", "Your Link is invalid or Expired");
             return "message";
         }else{
-            userDtls.setPassword(passwordEncoder.encode(password));
+
+            String passwordChecker = passwordEncoder.encode(password);
+            userDtls.setPassword(passwordChecker);
             userDtls.setResetToken(null);
-            userService.saveUser(userDtls);
+            userService.updateUser(userDtls);
             m.addAttribute("msg","Password change successfully");
             return "message";
         }

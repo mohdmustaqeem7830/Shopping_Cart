@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface UserService {
     public UserDtls saveUser(UserDtls user);
+    public UserDtls updateUser(UserDtls user);
 
     public UserDtls getUserByEmail(String email);
 
@@ -20,4 +21,6 @@ public interface UserService {
     public void updateUserResetToken(String email, String resetToken);
 
     UserDtls getUserByToken(String token);
+
+
 }
