@@ -6,24 +6,28 @@ import com.ecom.Shopping_Cart.Model.UserDtls;
 import com.ecom.Shopping_Cart.Services.CategoryService;
 import com.ecom.Shopping_Cart.Services.ProductServices;
 import com.ecom.Shopping_Cart.Services.UserService;
+import com.ecom.Shopping_Cart.Utils.CommonUtils;
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 public class HomeController {
@@ -35,6 +39,12 @@ public class HomeController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private  CommonUtils commonUtils;
+
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @ModelAttribute
     public  void getUserDetail(Principal p, Model m){
@@ -106,6 +116,64 @@ public class HomeController {
 
 
          return  "redirect:/register";
+    }
+
+
+//    forgot password code
+
+    @GetMapping("/forgotPassword")
+    public String forgotPassword(){
+        return "/forgotPassword";
+    }
+
+
+    @PostMapping("forgotPassword")
+    public String forgotProcessPassword(@RequestParam String email, HttpSession session, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
+        UserDtls user = userService.getUserByEmail(email);
+        if (!ObjectUtils.isEmpty(user)){
+
+            String resetToken = UUID.randomUUID().toString();
+            userService.updateUserResetToken(email, resetToken);
+
+            String url = CommonUtils.generateUrl(request)+"/resetPassword?token="+resetToken;
+            System.out.println(url);
+            Boolean sendmail = commonUtils.sendMail(email,url);
+
+
+            if (sendmail){
+                session.setAttribute("succMsg","Please check your email ! Password Reset link sent");
+            }else{
+                session.setAttribute("errorMsg","Something wrong on server ! Email not send");
+            }
+        }else{
+            session.setAttribute("errorMsg", "Invalid Email Id");
+        }
+        return "redirect:/forgotPassword";
+    }
+    @GetMapping("/resetPassword")
+    public String showresetPassword(@RequestParam String token, Model m){
+        UserDtls userDtls = userService.getUserByToken(token);
+        if (ObjectUtils.isEmpty(userDtls)){
+            m.addAttribute("msg", "Your Link is invalid or Expired");
+           return "message";
+        }
+        m.addAttribute("token", token);
+        return "/resetPassword";
+    }
+
+    @PostMapping("/resetPassword")
+    public String resetPassword(@RequestParam String token,@RequestParam String password,Model m){
+        UserDtls userDtls = userService.getUserByToken(token);
+        if (ObjectUtils.isEmpty(userDtls)) {
+            m.addAttribute("msg", "Your Link is invalid or Expired");
+            return "message";
+        }else{
+            userDtls.setPassword(passwordEncoder.encode(password));
+            userDtls.setResetToken(null);
+            userService.saveUser(userDtls);
+            m.addAttribute("msg","Password change successfully");
+            return "message";
+        }
     }
 
 }
