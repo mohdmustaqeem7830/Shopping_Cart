@@ -1,5 +1,6 @@
 package com.ecom.Shopping_Cart.config;
 
+import com.ecom.Shopping_Cart.Model.UserDtls;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,6 +12,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Collection;
 import java.util.Set;
 @Service
@@ -20,6 +22,7 @@ public class AuthSuccessHandlerImpl implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         Collection<? extends GrantedAuthority>  authorities = authentication.getAuthorities();
         Set<String> roles =   AuthorityUtils.authorityListToSet(authorities);
+
 
         if (roles.contains("ROLE_ADMIN")) {
             response.sendRedirect("/admin/");

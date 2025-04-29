@@ -10,6 +10,7 @@ import com.ecom.Shopping_Cart.Utils.OrderStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -54,5 +55,23 @@ public class OrderServicesImpl implements OrderServices {
             productOrderRepository.save(productOrder);
 
         }
+    }
+
+    @Override
+    public List<ProductOrder> getOrdersByUser(Integer userId) {
+        List<ProductOrder> orders = productOrderRepository.findByUserId(userId);
+        return orders;
+    }
+
+    @Override
+    public Boolean updateOrderStatus(Integer orderId, String st) {
+         ProductOrder order = productOrderRepository.findById(orderId).get();
+         if (ObjectUtils.isEmpty(order)){
+             return false;
+         }else{
+                order.setStatus(st);
+                productOrderRepository.save(order);
+
+    return true;     }
     }
 }
