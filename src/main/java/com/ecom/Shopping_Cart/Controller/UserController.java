@@ -39,6 +39,8 @@ public class UserController {
             String email = p.getName();
             UserDtls user = userService.getUserByEmail(email);
             m.addAttribute("user", user);
+            Integer countCart = cartService.getCountCart(user.getId());
+            m.addAttribute("countCart", countCart);
         }
 
         List<Category> allActiveCategory = categoryService.getAllActiveCategory();
@@ -65,6 +67,37 @@ public class UserController {
         }
         return "redirect:/view_product/" + pid;}
 
+    @GetMapping("/cart")
+    public String loadCartPage(Principal p , Model m){
+        UserDtls user = getLoggedInUserDetail(p);
+        List<Cart> carts =  cartService.getCartByUserId(user.getId());
+        m.addAttribute("carts",carts);
+
+        if (carts.size()>0){
+            Double totalOrderPrice  = carts.get(carts.size()-1).getTotalOrderPrice();
+            m.addAttribute("totalOrderPrice",totalOrderPrice);
+        }
+
+        return "/user/cart";
+    }
 
 
+    public UserDtls getLoggedInUserDetail(Principal p){
+        UserDtls user = userService.getUserByEmail(p.getName());
+        return user;
+    }
+
+    @GetMapping("/cartQuantityUpdate")
+    public String updateCartQuantity(@RequestParam String sy,@RequestParam Integer cid, HttpSession session) {
+        cartService.updateCartQuantity(sy,cid);
+        return "redirect:/user/cart";
+    }
+
+
+//    Orders code start from here
+
+    @GetMapping("/orders")
+    public String orderPage() {
+        return "user/order";
+    }
 }
