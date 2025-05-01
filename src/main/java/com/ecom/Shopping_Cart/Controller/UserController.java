@@ -5,6 +5,7 @@ import com.ecom.Shopping_Cart.Services.CartService;
 import com.ecom.Shopping_Cart.Services.CategoryService;
 import com.ecom.Shopping_Cart.Services.OrderServices;
 import com.ecom.Shopping_Cart.Services.UserService;
+import com.ecom.Shopping_Cart.Utils.CommonUtils;
 import com.ecom.Shopping_Cart.Utils.OrderStatus;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.List;
 
@@ -30,6 +32,9 @@ public class UserController {
 
     @Autowired
     private OrderServices orderServices;
+
+    @Autowired
+    private CommonUtils commonUtils;
 
 
     @ModelAttribute
@@ -138,7 +143,7 @@ public class UserController {
     }
 
     @GetMapping("/updateStatus")
-    public String updateStatus(@RequestParam Integer id, @RequestParam Integer st,HttpSession session){
+    public String updateStatus(@RequestParam Integer id, @RequestParam Integer st,HttpSession session) throws  UnsupportedEncodingException {
         OrderStatus[]   values = OrderStatus.values();
         String status = null;
 
@@ -150,8 +155,15 @@ public class UserController {
 
         }
 
-        Boolean updateOrder =  orderServices.updateOrderStatus(id,status);
-        if (updateOrder){
+        ProductOrder updateOrder = orderServices.updateOrderStatus(id, status);
+
+        try {
+            commonUtils.sendMailForProductOrder(updateOrder, status);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (!ObjectUtils.isEmpty(updateOrder)){
             session.setAttribute("succMsg", "Status updated");
         }else{
             session.setAttribute("errorMsg", "Something went wrong on server");

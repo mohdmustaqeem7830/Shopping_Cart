@@ -6,6 +6,7 @@ import com.ecom.Shopping_Cart.Model.ProductOrder;
 import com.ecom.Shopping_Cart.Repository.CartRepository;
 import com.ecom.Shopping_Cart.Repository.ProductOrderRepository;
 import com.ecom.Shopping_Cart.Services.OrderServices;
+import com.ecom.Shopping_Cart.Utils.CommonUtils;
 import com.ecom.Shopping_Cart.Utils.OrderStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
@@ -24,6 +25,9 @@ public class OrderServicesImpl implements OrderServices {
     ProductOrderRepository productOrderRepository;
     @Autowired
     CartRepository cartRepository;
+
+    @Autowired
+    private CommonUtils commonUtils;
 
 
     @Override
@@ -64,14 +68,19 @@ public class OrderServicesImpl implements OrderServices {
     }
 
     @Override
-    public Boolean updateOrderStatus(Integer orderId, String st) {
+    public ProductOrder updateOrderStatus(Integer orderId, String st) {
          ProductOrder order = productOrderRepository.findById(orderId).get();
          if (ObjectUtils.isEmpty(order)){
-             return false;
+             return null;
          }else{
                 order.setStatus(st);
-                productOrderRepository.save(order);
+               ProductOrder updateOrder =  productOrderRepository.save(order);
+               return updateOrder;
+         }
+    }
 
-    return true;     }
+    @Override
+    public List<ProductOrder> getAllOrders() {
+        return productOrderRepository.findAll();
     }
 }

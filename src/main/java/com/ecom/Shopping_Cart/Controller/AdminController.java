@@ -3,11 +3,11 @@ package com.ecom.Shopping_Cart.Controller;
 
 import com.ecom.Shopping_Cart.Model.Category;
 import com.ecom.Shopping_Cart.Model.Product;
+import com.ecom.Shopping_Cart.Model.ProductOrder;
 import com.ecom.Shopping_Cart.Model.UserDtls;
-import com.ecom.Shopping_Cart.Services.CartService;
-import com.ecom.Shopping_Cart.Services.CategoryService;
-import com.ecom.Shopping_Cart.Services.ProductServices;
-import com.ecom.Shopping_Cart.Services.UserService;
+import com.ecom.Shopping_Cart.Services.*;
+import com.ecom.Shopping_Cart.Utils.CommonUtils;
+import com.ecom.Shopping_Cart.Utils.OrderStatus;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -39,6 +39,12 @@ public class AdminController {
 
     @Autowired
     private CartService cartService;
+
+    @Autowired
+    private OrderServices orderServices;
+
+    @Autowired
+    private CommonUtils commonUtils;
 
 
     @ModelAttribute
@@ -265,4 +271,44 @@ public class AdminController {
         }
         return "redirect:/admin/users";
     }
+
+    @GetMapping("/orders")
+    public String getAllOrders(Principal p , Model m) {
+        List<ProductOrder>  orders = orderServices.getAllOrders();
+        m.addAttribute("orders",orders);
+        return "/admin/order";
+    }
+
+    @PostMapping("/updateOrderStatus")
+    public String updateOrderStatus(@RequestParam Integer id, @RequestParam Integer st,HttpSession session){
+        OrderStatus[]   values = OrderStatus.values();
+        String status = null;
+
+        for (OrderStatus os : values) {
+            if (os.getId().equals(st))
+            {
+                status = os.getName();
+            }
+
+        }
+
+        ProductOrder updateOrder =  orderServices.updateOrderStatus(id,status);
+        try {
+            commonUtils.sendMailForProductOrder(updateOrder,status);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        if (!ObjectUtils.isEmpty(updateOrder)){
+            session.setAttribute("succMsg", "Status updated");
+        }else{
+            session.setAttribute("errorMsg", "Something went wrong on server");
+        }
+        return "redirect:/admin/orders";
+    }
+
+    public UserDtls getLoggedInUserDetail(Principal p){
+        UserDtls user = userService.getUserByEmail(p.getName());
+        return user;
+    }
+
 }
