@@ -10,6 +10,9 @@ import com.ecom.Shopping_Cart.Utils.CommonUtils;
 import com.ecom.Shopping_Cart.Utils.OrderStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -84,8 +87,18 @@ public class OrderServicesImpl implements OrderServices {
         return productOrderRepository.findAll();
     }
 
+
+    @Override
+    public Page<ProductOrder> getAllOrdersPagination(Integer pageNo, Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNo,pageSize);
+        return productOrderRepository.findAll(pageable);
+    }
+
+
     @Override
     public ProductOrder getOrderById(String orderId) {
         return productOrderRepository.findByOrderId(orderId);
     }
+
+
 }

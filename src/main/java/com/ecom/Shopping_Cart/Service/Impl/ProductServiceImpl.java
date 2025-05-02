@@ -28,6 +28,13 @@ public class ProductServiceImpl implements ProductServices {
     }
 
     @Override
+    public Page<Product> getAllProductsPagination(Integer pagenNo, Integer pageSize) {
+        Pageable pageable = PageRequest.of(pagenNo, pageSize);
+
+        return productRepository.findAll(pageable);
+    }
+
+    @Override
     public Boolean deleteProduct(int id) {
      if(productRepository.existsById(id)) {
          productRepository.deleteById(id);
@@ -62,6 +69,16 @@ public class ProductServiceImpl implements ProductServices {
     }
 
     @Override
+    public Page<Product> searchProductsPagination(String ch, Integer pageNo, Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNo,pageSize);
+
+       return  productRepository.findByTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(ch,ch,pageable);
+
+    }
+
+
+
+    @Override
     public Page<Product> getAllActiveProductsPagination(Integer pagenNo, Integer pageSize,String category) {
 
         Pageable pageable = PageRequest.of(pagenNo,pageSize);
@@ -75,4 +92,6 @@ public class ProductServiceImpl implements ProductServices {
         }
         return pageProduct;
     }
+
+
 }
