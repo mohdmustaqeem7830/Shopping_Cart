@@ -1,6 +1,7 @@
 package com.ecom.Shopping_Cart.Services;
 
 import com.ecom.Shopping_Cart.Model.UserDtls;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,6 +22,8 @@ public interface UserService {
     public void updateUserResetToken(String email, String resetToken);
 
     UserDtls getUserByToken(String token);
+
+    public UserDtls updateUserProfile(UserDtls user, MultipartFile img);
 
 
 }

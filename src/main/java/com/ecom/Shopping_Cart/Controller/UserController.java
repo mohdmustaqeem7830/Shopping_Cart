@@ -7,12 +7,15 @@ import com.ecom.Shopping_Cart.Services.OrderServices;
 import com.ecom.Shopping_Cart.Services.UserService;
 import com.ecom.Shopping_Cart.Utils.CommonUtils;
 import com.ecom.Shopping_Cart.Utils.OrderStatus;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
@@ -170,6 +173,26 @@ public class UserController {
         }
         return "redirect:/user/userOrders";
     }
+
+
+//    code for the profile section start from here
+    @GetMapping("/profile")
+    public String profile(){
+        return "/user/profile";
+    }
+
+    @PostMapping("/updateProfile")
+    public String updateProfile(@ModelAttribute UserDtls user, @RequestParam MultipartFile img,HttpSession session){
+        UserDtls updateUser = userService.updateUserProfile(user,img);
+        if (!ObjectUtils.isEmpty(updateUser)){
+                 session.setAttribute("succMsg", "Profile updated Successfully");
+        }else{
+            session.setAttribute("errorMsg", "Something went wrong on server");
+        }
+
+        return "redirect:/user/profile";
+    }
+
 
 
 
