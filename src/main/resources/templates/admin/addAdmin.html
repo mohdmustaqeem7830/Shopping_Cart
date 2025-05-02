@@ -11,15 +11,10 @@
 <section>
     <div class="container mt-5 p-5">
         <div class="row">
-
-            <!--        we are dividing login screen half half for image and login info -->
-            <div class="col-md-5 p-5">
-                <img alt=""  src="img/ecom.png"  height="400px" width="100%">
-            </div>
-            <div class="col-md-7  p-5">
+            <div class="col-md-7  p-5 offset-md-2">
                 <div  class="card  shadow-sm p-3 mb-5 bg-body-tertiary rounded">
                     <div class="card-header text-center">
-                        <p class="fs-4 text-center"> Register </p>
+                        <p class="fs-4 text-center"> Add Admin </p>
 
                         <th:block th:if="${session.succMsg}">
                             <p class="text-success fw-bold">[[${session.succMsg}]]</p>
@@ -35,21 +30,21 @@
                     </div>
 
                     <div class="card-body">
-                        <form action="/saveUser"  enctype="multipart/form-data" method="post">
+                        <form action="/admin/addAdmin"  enctype="multipart/form-data" method="post">
                             <div class="row">
-                            <div class="col">
-                                <label class="form-label mb-2">
-                                    Full Name
-                                </label>
-                                <input class="form-control" name="name" type="text" required>
-                            </div>
+                                <div class="col">
+                                    <label class="form-label mb-2">
+                                        Full Name
+                                    </label>
+                                    <input class="form-control" name="name" type="text" required>
+                                </div>
 
-                            <div class="col">
-                                <label class="form-Label mb-2">
-                                    Mobile Number
-                                </label>
-                                <input class="form-control" name="mobileNumber" type="number" required>
-                            </div>
+                                <div class="col">
+                                    <label class="form-Label mb-2">
+                                        Mobile Number
+                                    </label>
+                                    <input class="form-control" name="mobileNumber" type="number" required>
+                                </div>
                             </div>
 
                             <div class="mb-3">
@@ -70,7 +65,7 @@
 
                                 <div class="col">
                                     <label class="form-Label mb-2">
-                                       City
+                                        City
                                     </label>
                                     <input class="form-control" name="city" type="text" required>
                                 </div>
@@ -114,18 +109,11 @@
                                 <label class="form-Label">
                                     Profile Image
                                 </label>
-                                <input class="form-control" name="file" type="file">
+                                <input class="form-control" name="file" type="file" required>
                             </div>
 
                             <button type="submit" class="btn bg-primary text-white col-md-12 mt-4">Register</button>
                         </form>
-                    </div>
-
-                    <div class="card-footer text-center">
-                        have an account ?
-                        <a href="#" class="text-decoration-none"> Login
-                        </a>
-
                     </div>
 
                 </div>

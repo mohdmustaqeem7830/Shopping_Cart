@@ -16,7 +16,8 @@
         <div class="card card-sh">
 
             <div class="card-header text-center">
-                <p class="fs-4">View Products</p>
+                <p class="fs-4" th:if="${type==1}">Users</p>
+                <p class="fs-4" th:if="${type==2}">Admins</p>
             </div>
 
             <div class="card-body  text-center">
@@ -36,7 +37,7 @@
                     <tbody>
                     <tr th:each="p,c:${users}">
                         <th scope="row">[[${c.count}]]</th>
-                        <td><img th:src="@{/img/profile_img/}+${p.profileImage}" height="50px" width="50px">[[${p.profileImage}]]</td>
+                        <td><img th:src="@{/img/profile_img/}+${p.profileImage}" height="50px" width="50px"></td>
                         <td>[[${p.name}]]</td>
                         <td>[[${p.email}]]</td>
                         <td>[[${p.mobileNumber}]]</td>

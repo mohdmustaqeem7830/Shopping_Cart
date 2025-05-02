@@ -5,6 +5,7 @@ import com.ecom.Shopping_Cart.Model.Category;
 import com.ecom.Shopping_Cart.Model.Product;
 import com.ecom.Shopping_Cart.Model.ProductOrder;
 import com.ecom.Shopping_Cart.Model.UserDtls;
+import com.ecom.Shopping_Cart.Service.Impl.UserServiceImpl;
 import com.ecom.Shopping_Cart.Services.*;
 import com.ecom.Shopping_Cart.Utils.CommonUtils;
 import com.ecom.Shopping_Cart.Utils.OrderStatus;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -46,6 +48,11 @@ public class AdminController {
 
     @Autowired
     private CommonUtils commonUtils;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserServiceImpl userServiceImpl;
 
 
     @ModelAttribute
@@ -277,22 +284,36 @@ public class AdminController {
     //User Code here
 
     @GetMapping("/users")
-    public String getAllUsers(Model m){
-        List<UserDtls> allUser = userService.getAllUser("ROLE_USER");
+    public String getAllUsers(Model m,@RequestParam String type){
+        List<UserDtls> allUser = null;
+        if (type.equals("1")){
+            allUser = userService.getAllUser("ROLE_USER");
+        }else{
+            allUser = userService.getAllUser("ROLE_ADMIN");
+        }
         m.addAttribute("users",allUser);
+        m.addAttribute("type",type);
         return "admin/users";
 
     }
 @GetMapping("/updateStatus/{id}")
     public String updateUserAccountStatus(@PathVariable int id,HttpSession session){
+        UserDtls userDtls = userService.getUserById(id);
+        String type = null;
+        if (userDtls.getRole().equals("ROLE_USER")){
+            type = "1";
+        }else{
+            type = "2";
+        }
+
+
         Boolean f  = userService.updateAccountStatus(id);
-        System.out.println(String.valueOf(id));
         if (f){
             session.setAttribute("succMsg","Account Status Updated Successfully");
         }else{
             session.setAttribute("errorMsg","Not Updated ! Internal Server error");
         }
-        return "redirect:/admin/users";
+        return "redirect:/admin/users?type="+type;
     }
 
     @GetMapping("/orders")
@@ -358,9 +379,6 @@ public class AdminController {
                 m.addAttribute("srch",true);
             }
         }else{
-//            List<ProductOrder>  orders = orderServices.getAllOrders();
-//            m.addAttribute("orders",orders);
-//            m.addAttribute("srch",false);
             Page<ProductOrder>  orders = orderServices.getAllOrdersPagination(pageNo,pageSize);
             m.addAttribute("orders",orders.getContent());
             m.addAttribute("srch",false);
@@ -373,6 +391,84 @@ public class AdminController {
         }
         return "admin/order";
     }
+
+
+//    add admin code start from here
+
+    @GetMapping("/addAdmin")
+    public String loadAdminPage(Model m){
+
+       return "/admin/addAdmin";
+    }
+
+    @PostMapping("/addAdmin")
+    public String saveAdmin(@ModelAttribute UserDtls user, @RequestParam("file") MultipartFile file, HttpSession session)
+            throws IOException {
+
+        String imageName = file.isEmpty() ? "default.jpg" : file.getOriginalFilename();
+        user.setProfileImage(imageName);
+        UserDtls saveUser = userService.saveAdmin(user);
+
+        if (!ObjectUtils.isEmpty(saveUser)) {
+            if (!file.isEmpty()) {
+                File saveFile = new ClassPathResource("static/img").getFile();
+
+                Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "profile_img" + File.separator
+                        + file.getOriginalFilename());
+
+//				System.out.println(path);
+                Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+            }
+            session.setAttribute("succMsg", "Register successfully");
+        } else {
+            session.setAttribute("errorMsg", "something wrong on server");
+        }
+
+        return "redirect:/admin/addAdmin";
+    }
+    //profile for the admin
+
+    @GetMapping("/profile")
+    public String profile(){
+        return "/admin/profile";
+    }
+
+    @PostMapping("/updateProfile")
+    public String updateProfile(@ModelAttribute UserDtls user, @RequestParam MultipartFile img,HttpSession session){
+        UserDtls updateUser = userService.updateUserProfile(user,img);
+        if (!ObjectUtils.isEmpty(updateUser)){
+            session.setAttribute("succMsg", "Profile updated Successfully");
+        }else{
+            session.setAttribute("errorMsg", "Something went wrong on server");
+        }
+
+        return "redirect:/admin/profile";
+    }
+
+
+    @PostMapping("/changePassword")
+    public String changePassword(@RequestParam String newPassword,@RequestParam String currentPassword,Principal p,HttpSession session){
+        UserDtls user  = commonUtils.getLoggedInUserDetail(p);
+
+        Boolean matches = passwordEncoder.matches(currentPassword,user.getPassword());
+        if (matches){
+            String encodePassword =  passwordEncoder.encode(newPassword);
+            user.setPassword(encodePassword);
+            UserDtls userDtls = userService.updateUser(user);
+            if (!ObjectUtils.isEmpty(userDtls)){
+                session.setAttribute("succMsg", "Password changed successfully");
+            }else{
+                session.setAttribute("errorMsg","Something went on server side");
+            }
+
+        }else{
+            session.setAttribute("errorMsg", "Current Password is incorrect");
+        }
+
+
+        return "redirect:/admin/profile";
+    }
+
 
 
 }

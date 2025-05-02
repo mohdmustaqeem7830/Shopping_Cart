@@ -31,6 +31,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDtls saveUser(UserDtls user) {
+        user.setRole("ROLE_USER");
+        user.setIsEnable(true);
+        user.setAccountNonLocked(true);
+        user.setFailedAttempt(0);
+        user.setLockTime(null);
+        String encodePassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodePassword);
+        return userRepository.save(user);
+    }
+
+    @Override
+    public UserDtls saveAdmin(UserDtls user) {
         user.setRole("ROLE_ADMIN");
         user.setIsEnable(true);
         user.setAccountNonLocked(true);
@@ -49,6 +61,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDtls getUserByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public UserDtls getUserById(Integer id) {
+        return userRepository.findById(id).get();
     }
 
     @Override

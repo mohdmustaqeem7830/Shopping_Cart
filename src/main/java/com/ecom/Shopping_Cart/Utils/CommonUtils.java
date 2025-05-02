@@ -1,7 +1,10 @@
 package com.ecom.Shopping_Cart.Utils;
 import java.io.UnsupportedEncodingException;
+import java.security.Principal;
 
 import com.ecom.Shopping_Cart.Model.ProductOrder;
+import com.ecom.Shopping_Cart.Model.UserDtls;
+import com.ecom.Shopping_Cart.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -14,6 +17,9 @@ public class CommonUtils {
 
     @Autowired
     private JavaMailSender  mailSender ;
+
+    @Autowired
+    private UserService userService;
 
     public  Boolean sendMail(String email,String url) throws MessagingException, UnsupportedEncodingException {
         MimeMessage message = mailSender.createMimeMessage();
@@ -65,5 +71,11 @@ public class CommonUtils {
         helper.setText(msg, true);
         mailSender.send(message);
         return true;
+    }
+
+
+    public UserDtls getLoggedInUserDetail(Principal p){
+        UserDtls user = userService.getUserByEmail(p.getName());
+        return user;
     }
 }

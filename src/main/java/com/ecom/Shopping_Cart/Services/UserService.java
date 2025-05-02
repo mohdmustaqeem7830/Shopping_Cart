@@ -7,9 +7,11 @@ import java.util.List;
 
 public interface UserService {
     public UserDtls saveUser(UserDtls user);
+    public UserDtls saveAdmin(UserDtls user);
     public UserDtls updateUser(UserDtls user);
 
     public UserDtls getUserByEmail(String email);
+    public UserDtls getUserById(Integer id);
 
     public List<UserDtls> getAllUser(String role);
 
