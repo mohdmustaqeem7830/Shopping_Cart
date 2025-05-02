@@ -181,8 +181,13 @@ public class AdminController {
     }
 
     @GetMapping("products")
-    public  String loadViewProduct(Model m){
-      List<Product> products = productServices.getAllProducts();
+    public  String loadViewProduct(Model m,@RequestParam(defaultValue = "") String ch){
+        List<Product> products=null;
+        if (ch!=null && ch.length()>0){
+                products = productServices.searchProducts(ch);
+        }else{
+            products = productServices.getAllProducts();
+        }
       m.addAttribute("products",products);
     return "admin/product";}
 
@@ -315,7 +320,7 @@ public class AdminController {
 
     //code for the search order via order id ;
     @GetMapping("/searchOrder")
-    public String  searchProduct(@RequestParam String orderId,Model m,HttpSession session){
+    public String  searchProduct(@RequestParam(defaultValue = "") String orderId,Model m,HttpSession session){
 
         if (orderId!=null && orderId.length()>0){
             ProductOrder order = orderServices.getOrderById(orderId.trim());
@@ -331,9 +336,8 @@ public class AdminController {
             m.addAttribute("orders",orders);
             m.addAttribute("srch",false);
         }
-
-
         return "admin/order";
     }
+
 
 }

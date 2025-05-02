@@ -1,66 +1,101 @@
 <!DOCTYPE html>
-<html  lang="en"  xmlns:th = "html://www.thymeLeaf.org"  th:replace="base::Layout(~{::section})">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::Layout(~{::section})">
 
 <head>
-    <meta>
-    <title>
-        INSERT IITLE HERE
-    </title>
+    <meta charset="UTF-8">
+    <title>View Products</title>
 </head>
 
 <body>
 <section>
-
     <div class="container mt-5">
-        <a href="/admin/" class="btn btn-primary ms-5 mb-5"><i class="fa-solid fa-arrow-left"></i> Admin Dashboard</a>
-    <div class="card card-sh">
-        <div class="card-header text-center">
-              <p class="fs-4">View Products</p>
+
+        <!-- Back Button -->
+        <a href="/admin/" class="btn btn-primary ms-5 mb-5">
+            <i class="fa-solid fa-arrow-left"></i> Admin Dashboard
+        </a>
+
+        <!-- Main Card -->
+        <div class="card card-sh">
+            <div class="card-header text-center">
+                <p class="fs-4">View Products</p>
+
+                <div class="row">
+
+                    <!-- Success Message -->
+                    <div th:if="${session.succMsg}">
+                        <p class="text-success fw-bold">[[${session.succMsg}]]</p>
+                        <span th:text="${@commonServiceImpl.removeSessionMsg()}"></span>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div th:if="${session.errorMsg}">
+                        <p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
+                        <span th:text="${@commonServiceImpl.removeSessionMsg()}"></span>
+                    </div>
+
+                    <!-- Search Bar -->
+                    <div class="col-md-4 p-4">
+                        <form action="/admin/products" method="get">
+                            <div class="row">
+                                <div class="col">
+                                    <input type="text" class="form-control" placeholder="Search Product" name="ch">
+                                </div>
+                                <div class="col">
+                                    <button class="btn btn-primary">Search</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Card Body with Table -->
+            <div class="card-body text-center">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Sl No.</th>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Discount</th>
+                        <th>Discount Price</th>
+                        <th>Status</th>
+                        <th>Stock</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="p, c : ${products}">
+                        <td>[[${c.count}]]</td>
+                        <td>
+                            <img th:src="@{'/img/product_img/' + ${p.image}}" height="50" width="50" alt="Product Image">
+                        </td>
+                        <td>[[${p.title}]]</td>
+                        <td>[[${p.category}]]</td>
+                        <td>[[${p.price}]]</td>
+                        <td>[[${p.discount}]]</td>
+                        <td>[[${p.discountPrice}]]</td>
+                        <td>[[${p.isActive}]]</td>
+                        <td>[[${p.stock}]]</td>
+                        <td>
+                            <a th:href="@{'/loadEditProduct/' + ${p.id}}" class="btn btn-primary btn-sm">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit
+                            </a>
+                            <a th:href="@{'/deleteProduct/' + ${p.id}}" class="btn btn-danger btn-sm">
+                                <i class="fa-solid fa-trash-can"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="card-body  text-center">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">Sl No.</th>
-                    <th scope="col">Image.</th>
-                    <th scope="col">Title</th>
-                    <th scope="col">Category</th>
-                    <th scope="col">Price</th>
-                    <th scope="col">Discount</th>
-                    <th scope="col">Discount Price</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Stock</th>
-                    <th scope="col">Action</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="p,c:${products}">
-                    <th scope="row">[[${c.count}]]</th>
-                    <td><img th:src="@{/img/product_img/}+${p.image}" height="50px" width="50px">[[${p.image}]]</td>
-                    <td>[[${p.title}]]</td>
-                    <td>[[${p.category}]]</td>
-                    <td>[[${p.price}]]</td>
-                    <td>[[${p.discount}]]</td>
-                    <td>[[${p.discountPrice}]]</td>
-                    <td>[[${p.isActive}]]</td>
-                    <td>[[${p.stock}]]</td>
-                    <td>
-                        <a th:href="@{'loadEditProduct/'+${p.id}}"   class="btn btn-primary btn-sm">
-                            <i class="fa-solid fa-pen-to-square fa-1x"> Edit</i>
-                        </a>
-
-                        <a th:href="@{'deleteProduct/'+${p.id}}" class="btn btn-danger btn-sm">
-                            <i class="fa-solid fa-trash-can fa-1x"> Delete</i>
-                        </a>
-                    </td>
-                </tr>
-
-                </tbody>
-            </table>
-        </div>
-
-    </div>
     </div>
 </section>
 </body>
+</html>
