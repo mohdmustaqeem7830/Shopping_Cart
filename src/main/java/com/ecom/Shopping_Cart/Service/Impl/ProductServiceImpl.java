@@ -4,6 +4,9 @@ import com.ecom.Shopping_Cart.Model.Product;
 import com.ecom.Shopping_Cart.Repository.ProductRepository;
 import com.ecom.Shopping_Cart.Services.ProductServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -56,5 +59,20 @@ public class ProductServiceImpl implements ProductServices {
         List<Product> products = productRepository.findByTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(ch,ch);
         return products;
 
+    }
+
+    @Override
+    public Page<Product> getAllActiveProductsPagination(Integer pagenNo, Integer pageSize,String category) {
+
+        Pageable pageable = PageRequest.of(pagenNo,pageSize);
+        Page<Product> pageProduct = null;
+
+        List<Product> products;
+        if (ObjectUtils.isEmpty(category)){
+            pageProduct = productRepository.findByIsActiveTrue(pageable);
+        }else{
+            pageProduct = productRepository.findByCategory(pageable,category);
+        }
+        return pageProduct;
     }
 }

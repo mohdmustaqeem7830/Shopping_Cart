@@ -1,6 +1,7 @@
 package com.ecom.Shopping_Cart.Services;
 
 import com.ecom.Shopping_Cart.Model.Product;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -14,5 +15,5 @@ public interface ProductServices {
 
     List<Product> getAllActiveProducts(String category);
     List<Product> searchProducts(String ch);
-
+    Page<Product> getAllActiveProductsPagination(Integer pagenNo,Integer pageSize,String category);
 }
