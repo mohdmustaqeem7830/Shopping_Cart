@@ -11,6 +11,7 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -38,6 +39,9 @@ public class UserController {
 
     @Autowired
     private CommonUtils commonUtils;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
 
     @ModelAttribute
@@ -189,6 +193,30 @@ public class UserController {
         }else{
             session.setAttribute("errorMsg", "Something went wrong on server");
         }
+
+        return "redirect:/user/profile";
+    }
+
+
+    @PostMapping("/changePassword")
+    public String changePassword(@RequestParam String newPassword,@RequestParam String currentPassword,Principal p,HttpSession session){
+        UserDtls user  = getLoggedInUserDetail(p);
+
+        Boolean matches = passwordEncoder.matches(currentPassword,user.getPassword());
+        if (matches){
+           String encodePassword =  passwordEncoder.encode(newPassword);
+           user.setPassword(encodePassword);
+           UserDtls userDtls = userService.updateUser(user);
+           if (!ObjectUtils.isEmpty(userDtls)){
+               session.setAttribute("succMsg", "Password changed successfully");
+           }else{
+               session.setAttribute("errorMsg","Something went on server side");
+           }
+
+        }else{
+            session.setAttribute("errorMsg", "Current Password is incorrect");
+        }
+
 
         return "redirect:/user/profile";
     }
