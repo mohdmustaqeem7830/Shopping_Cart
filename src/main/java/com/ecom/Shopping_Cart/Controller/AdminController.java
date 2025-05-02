@@ -276,6 +276,8 @@ public class AdminController {
     public String getAllOrders(Principal p , Model m) {
         List<ProductOrder>  orders = orderServices.getAllOrders();
         m.addAttribute("orders",orders);
+        m.addAttribute("srch",false);
+
         return "/admin/order";
     }
 
@@ -309,6 +311,29 @@ public class AdminController {
     public UserDtls getLoggedInUserDetail(Principal p){
         UserDtls user = userService.getUserByEmail(p.getName());
         return user;
+    }
+
+    //code for the search order via order id ;
+    @GetMapping("/searchOrder")
+    public String  searchProduct(@RequestParam String orderId,Model m,HttpSession session){
+
+        if (orderId!=null && orderId.length()>0){
+            ProductOrder order = orderServices.getOrderById(orderId.trim());
+
+            if (ObjectUtils.isEmpty(order)){
+                session.setAttribute("errorMsg","Order Not Found");
+            }else{
+                m.addAttribute("orderDtls",order);
+                m.addAttribute("srch",true);
+            }
+        }else{
+            List<ProductOrder>  orders = orderServices.getAllOrders();
+            m.addAttribute("orders",orders);
+            m.addAttribute("srch",false);
+        }
+
+
+        return "admin/order";
     }
 
 }

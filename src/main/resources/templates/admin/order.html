@@ -23,10 +23,10 @@
                 </th:block>
 
                 <div class="col-md-4 p-4">
-                    <form>
+                    <form  action="/admin/searchOrder" method="get">
                         <div class="row">
                             <div class="col">
-                                <input type="text" class="form-control"  placeholder="Enter Ordered Id">
+                                <input type="text" class="form-control"  placeholder="Enter Ordered Id" name="orderId">
                             </div>
                             <div class="col">
                                 <button class="btn btn-primary">Search</button>
@@ -50,58 +50,119 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="o : ${orders}">
-                        <th scope="row">[[${o.orderId}]]</th>
-                        <td>[[${o.orderDate}]]</td>
-                        <td class="text-start">
-                            Name : [[${o.orderAddress.firstName+' '+o.orderAddress.lastName}]] <br>
-                            Email : [[${o.orderAddress.email}]] <br>
-                            Mob No : [[${o.orderAddress.mobileNo}]] <br>
-                            Address : [[${o.orderAddress.address}]] <br>
-                            City : [[${o.orderAddress.city}]] <br>
-                            State : [[${o.orderAddress.state}]] <br>
-                            Pincode : [[${o.orderAddress.pincode}]]
+                    <th:block th:if="${srch}">
 
-                        </td>
-                        <td>[[${o.product.title}]]</td>
-                        <td class="text-start">
-                            Quantity : [[${o.quantity}]] <br>
-                            Price    : [[${o.price}]] <br>
-                            Total Price :
-                            [[${o.quantity}]] x [[${o.price}]] = [[${o.quantity * o.price}]]
+                        <tr >
+                            <th scope="row">[[${orderDtls.orderId}]]</th>
+                            <td>[[${orderDtls.orderDate}]]</td>
+                            <td class="text-start">
+                                Name : [[${orderDtls.orderAddress.firstName+' '+orderDtls.orderAddress.lastName}]] <br>
+                                Email : [[${orderDtls.orderAddress.email}]] <br>
+                                Mob No : [[${orderDtls.orderAddress.mobileNo}]] <br>
+                                Address : [[${orderDtls.orderAddress.address}]] <br>
+                                City : [[${orderDtls.orderAddress.city}]] <br>
+                                State : [[${orderDtls.orderAddress.state}]] <br>
+                                Pincode : [[${orderDtls.orderAddress.pincode}]]
 
-                        </td>
-                        <td>[[${o.status}]]</td>
-                        <td>
-                            <form action="/admin/updateOrderStatus" method="post">
-                                <div class="row">
-                                    <div class="col">
-                                       <select  class="form-control" name="st">
-                                           <option>--Select--</option>
-                                           <option value="1">In Progress</option>
-                                           <option value="2">Order Received</option>
-                                           <option value="3">Product Packed</option>
-                                           <option value="4">Out for Delivery</option>
-                                           <option value="5">Delivered</option>
-                                           <option value="6">Cancelled</option>
-                                       </select>
-                                    </div>
-                                    <input th:value="${o.id}" name="id" type="hidden">
+                            </td>
+                            <td>[[${orderDtls.product.title}]]</td>
+                            <td class="text-start">
+                                Quantity : [[${orderDtls.quantity}]] <br>
+                                Price    : [[${orderDtls.price}]] <br>
+                                Total Price :
+                                [[${orderDtls.quantity}]] x [[${orderDtls.price}]] = [[${orderDtls.quantity * orderDtls.price}]]
 
-                                    <th:blcok th:if="${o.status=='Cancelled' || o.status == 'Deliverd'}">
+                            </td>
+                            <td>[[${orderDtls.status}]]</td>
+                            <td>
+                                <form action="/admin/updateOrderStatus" method="post">
+                                    <div class="row">
                                         <div class="col">
-                                            <button class="btn btn-primary btn-sm disabled">Update</button>
+                                            <select  class="form-control" name="st">
+                                                <option>--Select--</option>
+                                                <option value="1">In Progress</option>
+                                                <option value="2">Order Received</option>
+                                                <option value="3">Product Packed</option>
+                                                <option value="4">Out for Delivery</option>
+                                                <option value="5">Delivered</option>
+                                                <option value="6">Cancelled</option>
+                                            </select>
                                         </div>
-                                    </th:blcok>
+                                        <input th:value="${orderDtls.id}" name="id" type="hidden">
 
-                                    <th:blcok th:unless="${o.status=='Cancelled' || o.status == 'Deliverd'}">
-                                        <button class="btn btn-primary btn-sm"  >Update</button>
-                                    </th:blcok>
+                                        <th:blcok th:if="${orderDtls.status=='Cancelled' || orderDtls.status == 'Deliverd'}">
+                                            <div class="col">
+                                                <button class="btn btn-primary btn-sm disabled">Update</button>
+                                            </div>
+                                        </th:blcok>
 
-                                </div>
-                            </form>
-                        </td>
-                    </tr>
+                                        <th:blcok th:unless="${orderDtls.status=='Cancelled' || orderDtls.status == 'Deliverd'}">
+                                            <button class="btn btn-primary btn-sm"  >Update</button>
+                                        </th:blcok>
+
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+
+                    </th:block>
+
+                    <th:block th:unless="${srch}">
+                        <tr th:each="o : ${orders}">
+                            <th scope="row">[[${o.orderId}]]</th>
+                            <td>[[${o.orderDate}]]</td>
+                            <td class="text-start">
+                                Name : [[${o.orderAddress.firstName+' '+o.orderAddress.lastName}]] <br>
+                                Email : [[${o.orderAddress.email}]] <br>
+                                Mob No : [[${o.orderAddress.mobileNo}]] <br>
+                                Address : [[${o.orderAddress.address}]] <br>
+                                City : [[${o.orderAddress.city}]] <br>
+                                State : [[${o.orderAddress.state}]] <br>
+                                Pincode : [[${o.orderAddress.pincode}]]
+
+                            </td>
+                            <td>[[${o.product.title}]]</td>
+                            <td class="text-start">
+                                Quantity : [[${o.quantity}]] <br>
+                                Price    : [[${o.price}]] <br>
+                                Total Price :
+                                [[${o.quantity}]] x [[${o.price}]] = [[${o.quantity * o.price}]]
+
+                            </td>
+                            <td>[[${o.status}]]</td>
+                            <td>
+                                <form action="/admin/updateOrderStatus" method="post">
+                                    <div class="row">
+                                        <div class="col">
+                                            <select  class="form-control" name="st">
+                                                <option>--Select--</option>
+                                                <option value="1">In Progress</option>
+                                                <option value="2">Order Received</option>
+                                                <option value="3">Product Packed</option>
+                                                <option value="4">Out for Delivery</option>
+                                                <option value="5">Delivered</option>
+                                                <option value="6">Cancelled</option>
+                                            </select>
+                                        </div>
+                                        <input th:value="${o.id}" name="id" type="hidden">
+
+                                        <th:blcok th:if="${o.status=='Cancelled' || o.status == 'Deliverd'}">
+                                            <div class="col">
+                                                <button class="btn btn-primary btn-sm disabled">Update</button>
+                                            </div>
+                                        </th:blcok>
+
+                                        <th:blcok th:unless="${o.status=='Cancelled' || o.status == 'Deliverd'}">
+                                            <button class="btn btn-primary btn-sm"  >Update</button>
+                                        </th:blcok>
+
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+                    </th:block>
+
+
                     </tbody>
                 </table>
             </div>

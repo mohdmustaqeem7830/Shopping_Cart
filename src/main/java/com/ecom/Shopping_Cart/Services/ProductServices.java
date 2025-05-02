@@ -13,5 +13,6 @@ public interface ProductServices {
     Product getProduct(int id);
 
     List<Product> getAllActiveProducts(String category);
+    List<Product> searchProducts(String ch);
 
 }
