@@ -44,63 +44,14 @@
             <p class="text-center fs-4">
               Category
             </p>
-            <div class="col-md-2">
+            <div class="col-md-2" th:each="c:${category}">
                 <div class="card rounded-circle shadow-sm p-3 mb-5 bg-body-tertiary rounded">
                     <div class="card-body text-center">
-                        <img src="img/category_img/appli.png"  height="140px" width="65%">
-                        <p>Electronics</p>
+                        <img th:src="@{'img/category_img/'+${c.imageName}}"  height="140px" width="65%"><br>
+                         <a  th:href="@{'/products?category='+${c.name}}"  class="text-decoration-none"> <p>[[${c.name}]]</p></a>
                     </div>
                 </div>
             </div>
-
-
-            <div class="col-md-2">
-                <div class="card rounded-circle shadow-sm p-3 mb-5 bg-body-tertiary rounded">
-                    <div class="card-body text-center">
-                        <img src="img/category_img/beuty.png"  height="140px" width="65%">
-                        <p>Beauty</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-2">
-                <div class="card rounded-circle shadow-sm p-3 mb-5 bg-body-tertiary rounded">
-                    <div class="card-body text-center">
-                        <img src="img/category_img/pant.png"  height="140px" width="65%">
-                        <p>Cloths</p>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="col-md-2">
-                <div class="card rounded-circle shadow-sm p-3 mb-5 bg-body-tertiary rounded">
-                    <div class="card-body text-center">
-                        <img src="img/category_img/laptop.jpg"  height="140px" width="65%">
-                        <p>Laptops</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-2">
-                <div class="card rounded-circle shadow-sm p-3 mb-5 bg-body-tertiary rounded">
-                    <div class="card-body text-center">
-                        <img src="img/category_img/mobile.png"  height="140px" width="65%">
-                        <p>Mobile</p>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="col-md-2">
-                <div class="card rounded-circle shadow-sm p-3 mb-5 bg-body-tertiary rounded">
-                    <div class="card-body text-center">
-                        <img src="img/category_img/groccery.jpg"  height="140px" width="65%">
-                        <p>Grocery</p>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
     </div>
@@ -111,41 +62,11 @@
      <div class="container-fluid bg-light p-3">
          <div class="row">
              <p class="text-center fs-4">Latest products</p>
-             <div class="col-md-3">
+             <div class="col-md-3"  th:each="p:${products}">
                  <div class="card shadow-sm p-3 mb-5 bg-body-tertiary rounded">
                      <div class="card-body text-center">
-                          <img src="img/product_img/laptop.jpg"  width="65%" height="140px" d>
-                          <p class="text-center"> HP Laptops</p>
-                     </div>
-                 </div>
-             </div>
-
-
-             <div class="col-md-3">
-                 <div class="card shadow-sm p-3 mb-5 bg-body-tertiary rounded">
-                     <div class="card-body text-center">
-                         <img src="img/product_img/laptop.jpg"  width="65%" height="140px" d>
-                         <p class="text-center"> HP Laptops</p>
-                     </div>
-                 </div>
-             </div>
-
-
-             <div class="col-md-3">
-                 <div class="card shadow-sm p-3 mb-5 bg-body-tertiary rounded">
-                     <div class="card-body text-center">
-                         <img src="img/product_img/laptop.jpg"  width="65%" height="140px" d>
-                         <p class="text-center"> HP Laptops</p>
-                     </div>
-                 </div>
-             </div>
-
-
-             <div class="col-md-3">
-                 <div class="card shadow-sm p-3 mb-5 bg-body-tertiary rounded">
-                     <div class="card-body text-center">
-                         <img src="img/product_img/laptop.jpg"  width="65%" height="140px" d>
-                         <p class="text-center"> HP Laptops</p>
+                          <img th:src="@{'img/product_img/'+${p.image}}"  width="65%" height="140px" d>
+                           <a th:href="@{'/view_product/'+${p.id}}" class="text-decoration-none">  <p class="text-center">[[${p.title}]]</p></a>
                      </div>
                  </div>
              </div>

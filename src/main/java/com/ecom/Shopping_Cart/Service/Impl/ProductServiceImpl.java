@@ -100,12 +100,6 @@ public class ProductServiceImpl implements ProductServices {
         Pageable pageable = PageRequest.of(pageNo,pageSize);
         Page<Product> pageProduct = null;
         pageProduct = productRepository.findByIsActiveTrueAndTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(ch,ch,pageable);
-
-//        if (ObjectUtils.isEmpty(category)){
-//            pageProduct = productRepository.findByIsActiveTrue(pageable);
-//        }else{
-//            pageProduct = productRepository.findByCategory(pageable,category);
-//        }
         return pageProduct;
     }
 
