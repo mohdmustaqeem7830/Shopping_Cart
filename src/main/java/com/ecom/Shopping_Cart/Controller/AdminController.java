@@ -407,21 +407,27 @@ public class AdminController {
 
         String imageName = file.isEmpty() ? "default.jpg" : file.getOriginalFilename();
         user.setProfileImage(imageName);
-        UserDtls saveUser = userService.saveAdmin(user);
 
-        if (!ObjectUtils.isEmpty(saveUser)) {
-            if (!file.isEmpty()) {
-                File saveFile = new ClassPathResource("static/img").getFile();
+        if (userService.existsByEmail(user.getEmail())){
+            session.setAttribute("errorMsg","Admin already Exists");
+        }else{
+            UserDtls saveUser = userService.saveAdmin(user);
 
-                Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "profile_img" + File.separator
-                        + file.getOriginalFilename());
+            if (!ObjectUtils.isEmpty(saveUser)) {
+                if (!file.isEmpty()) {
+                    File saveFile = new ClassPathResource("static/img").getFile();
+
+                    Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "profile_img" + File.separator
+                            + file.getOriginalFilename());
 
 //				System.out.println(path);
-                Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+                }
+                session.setAttribute("succMsg", "Register successfully");
+            } else {
+                session.setAttribute("errorMsg", "something wrong on server");
             }
-            session.setAttribute("succMsg", "Register successfully");
-        } else {
-            session.setAttribute("errorMsg", "something wrong on server");
+
         }
 
         return "redirect:/admin/addAdmin";

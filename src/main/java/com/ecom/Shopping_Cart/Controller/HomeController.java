@@ -144,19 +144,25 @@ public class HomeController {
 
          String imageName = file.isEmpty() ? "default.jpg" : file.getOriginalFilename();
          userDtls.setProfileImage(imageName);
-         UserDtls saveUser =  userService.saveUser(userDtls);
-
-         if (!ObjectUtils.isEmpty(saveUser)){
-             if (!file.isEmpty()){
-                 File saveFile = new ClassPathResource("static/img").getFile();
-                 Path path = Paths.get(saveFile.getAbsolutePath()+File.separator+"profile_img"+File.separator+file.getOriginalFilename());
-
-                 System.out.println(path);
-                 Files.copy(file.getInputStream(),path, StandardCopyOption.REPLACE_EXISTING);
-             }
-             session.setAttribute("succMsg", "Saved Successfuly");
+         if (userService.existsByEmail(userDtls.getEmail())){
+             session.setAttribute("error", "This user already exists");
          }else{
-             session.setAttribute("errorMsg", "Something went wrong");
+             UserDtls saveUser =  userService.saveUser(userDtls);
+
+
+             if (!ObjectUtils.isEmpty(saveUser)){
+                 if (!file.isEmpty()){
+                     File saveFile = new ClassPathResource("static/img").getFile();
+                     Path path = Paths.get(saveFile.getAbsolutePath()+File.separator+"profile_img"+File.separator+file.getOriginalFilename());
+
+                     System.out.println(path);
+                     Files.copy(file.getInputStream(),path, StandardCopyOption.REPLACE_EXISTING);
+                 }
+                 session.setAttribute("succMsg", "Saved Successfuly");
+             }else{
+                 session.setAttribute("errorMsg", "Something went wrong");
+             }
+
          }
 
 

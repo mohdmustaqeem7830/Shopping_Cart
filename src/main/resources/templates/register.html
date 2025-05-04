@@ -35,7 +35,7 @@
                     </div>
 
                     <div class="card-body">
-                        <form action="/saveUser"  enctype="multipart/form-data" method="post">
+                        <form action="/saveUser"  enctype="multipart/form-data" method="post" id="userRegister" novalidate>
                             <div class="row">
                             <div class="col">
                                 <label class="form-label mb-2">
@@ -98,14 +98,14 @@
                                     <label class="form-Label mb-2">
                                         Password
                                     </label>
-                                    <input class="form-control" name="password" type="password" required>
+                                    <input class="form-control" name="password" type="password" required id="pass">
                                 </div>
 
                                 <div class="col">
                                     <label class="form-Label mb-2">
                                         Confirm Password
                                     </label>
-                                    <input class="form-control" name="cpassword" type="password" required>
+                                    <input class="form-control" name="confirmpassword" type="password" required>
                                 </div>
 
                             </div>

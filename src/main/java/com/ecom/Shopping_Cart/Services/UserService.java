@@ -27,5 +27,7 @@ public interface UserService {
 
     public UserDtls updateUserProfile(UserDtls user, MultipartFile img);
 
+    public Boolean existsByEmail(String email);
+
 
 }
